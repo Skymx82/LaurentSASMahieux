@@ -32,6 +32,11 @@ const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
   const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
     if (!isDragging || !containerRef.current) return;
     
+    // Empêcher le défilement de la page sur mobile
+    if ('touches' in e) {
+      e.preventDefault();
+    }
+    
     let clientX: number;
     
     if ('touches' in e) {
@@ -65,12 +70,19 @@ const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
     <div 
       ref={containerRef}
       className="relative w-full h-[400px] md:h-[500px] overflow-hidden rounded-lg shadow-xl cursor-ew-resize"
+      style={{ touchAction: 'none' }} /* Empêche le défilement vertical sur mobile */
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
-      onTouchStart={handleMouseDown}
+      onTouchStart={(e) => {
+        e.preventDefault(); // Empêche le défilement de la page
+        handleMouseDown();
+      }}
       onTouchEnd={handleMouseUp}
-      onTouchMove={handleMouseMove}
+      onTouchMove={(e) => {
+        e.preventDefault(); // Empêche le défilement de la page
+        handleMouseMove(e);
+      }}
     >
       {/* Après (image de fond) */}
       <div className="absolute inset-0 w-full h-full">
